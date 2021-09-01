@@ -1,0 +1,7 @@
+type Character @model {
+  name: String!
+  wins: Int
+  losses: Int
+  winrate: Float
+  lanes: [String]
+}
