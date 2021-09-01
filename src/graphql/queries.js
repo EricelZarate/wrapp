@@ -10,6 +10,7 @@ export const getCharacter = /* GraphQL */ `
       losses
       winrate
       lanes
+      image
       createdAt
       updatedAt
     }
@@ -29,6 +30,7 @@ export const listCharacters = /* GraphQL */ `
         losses
         winrate
         lanes
+        image
         createdAt
         updatedAt
       }

@@ -10,6 +10,7 @@ export const onCreateCharacter = /* GraphQL */ `
       losses
       winrate
       lanes
+      image
       createdAt
       updatedAt
     }
@@ -24,6 +25,7 @@ export const onUpdateCharacter = /* GraphQL */ `
       losses
       winrate
       lanes
+      image
       createdAt
       updatedAt
     }
@@ -38,6 +40,7 @@ export const onDeleteCharacter = /* GraphQL */ `
       losses
       winrate
       lanes
+      image
       createdAt
       updatedAt
     }

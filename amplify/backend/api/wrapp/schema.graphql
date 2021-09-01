@@ -4,4 +4,5 @@ type Character @model {
   losses: Int
   winrate: Float
   lanes: [String]
+  image: String
 }
