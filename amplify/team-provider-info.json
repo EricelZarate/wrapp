@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-wrapp-dev-94533-authRole",
+      "UnauthRoleArn": "arn:aws:iam::461080330165:role/amplify-wrapp-dev-94533-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::461080330165:role/amplify-wrapp-dev-94533-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-wrapp-dev-94533-deployment",
+      "UnauthRoleName": "amplify-wrapp-dev-94533-unauthRole",
+      "StackName": "amplify-wrapp-dev-94533",
+      "StackId": "arn:aws:cloudformation:us-east-1:461080330165:stack/amplify-wrapp-dev-94533/422e4910-0b33-11ec-877b-0e4121f4bda3",
+      "AmplifyAppId": "d32crk8q8nwxdc"
+    },
+    "categories": {
+      "auth": {
+        "wrapp2c7efadb": {}
+      }
+    }
+  }
+}
