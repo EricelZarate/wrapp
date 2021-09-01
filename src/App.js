@@ -20,15 +20,19 @@ import {
   Grid,
   Typography,
   makeStyles,
+  ButtonGroup
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   image: {
     objectFit: "cover",
     width: "100%",
-    height: "60vh",
+    height: "50vh",
     [theme.breakpoints.down("sm")]: {
       height: "30vh",
+    },
+    [theme.breakpoints.up("lg")]: {
+      height: "45vh",
     },
   },
 }));
@@ -120,12 +124,16 @@ function App() {
       losses: character.losses,
       winrate: winr.toFixed(1),
       image: nimg.split("/")[4].split("?")[0],
+      lanes: character.lanes
     };
     await API.graphql({
       query: createCharacterMutation,
       variables: { input: newchar },
     });
-    fetchCharacters();
+    if (filter.length < 1)
+      fetchCharacters();
+    else
+      fetchCharactersF(filter)
   }
   async function addLose(character) {
     await API.graphql({
@@ -143,12 +151,16 @@ function App() {
       losses: parseInt(character.losses) + 1,
       winrate: winr.toFixed(1),
       image: nimg.split("/")[4].split("?")[0],
+      lanes: character.lanes
     };
     await API.graphql({
       query: createCharacterMutation,
       variables: { input: newchar },
     });
-    fetchCharacters();
+    if (filter.length < 1)
+      fetchCharacters();
+    else
+      fetchCharactersF(filter)
   }
   const [roles, setRoles] = useState([]);
   const handleChange = (event) => {
@@ -165,30 +177,31 @@ function App() {
     var jg = false;
     var supp = false;
     var adc = false;
-    character.lanes.forEach((element) => {
-      switch (element) {
-        case "Top": {
-          top = true;
-          break;
+    if (character.lanes)
+      character.lanes.forEach((element) => {
+        switch (element) {
+          case "Top": {
+            top = true;
+            break;
+          }
+          case "Mid": {
+            mid = true;
+            break;
+          }
+          case "Adc": {
+            adc = true;
+            break;
+          }
+          case "Jg": {
+            jg = true;
+            break;
+          }
+          case "Supp": {
+            supp = true;
+            break;
+          }
         }
-        case "Mid": {
-          mid = true;
-          break;
-        }
-        case "Adc": {
-          adc = true;
-          break;
-        }
-        case "Jg": {
-          jg = true;
-          break;
-        }
-        case "Supp": {
-          supp = true;
-          break;
-        }
-      }
-    });
+      });
     return (
       <div>
         {top && <img src="top.png" alt="Top" width="40px"></img>}
@@ -199,6 +212,86 @@ function App() {
       </div>
     );
   };
+  const [filter, setFilter] = useState([])
+  const handleAdc = () => {
+    if (filter.includes('Adc')) {
+      setFilter(filter.filter(function (value, index, arr) {
+        return value !== 'Adc';
+      }));
+    } else {
+      setFilter([...filter, 'Adc'])
+    }
+  }
+  const handleTop = () => {
+    if (filter.includes('Top')) {
+      setFilter(filter.filter(function (value, index, arr) {
+        return value !== 'Top';
+      }));
+    } else {
+      setFilter([...filter, 'Top'])
+    }
+  }
+  const handleJg = () => {
+    if (filter.includes('Jg')) {
+      setFilter(filter.filter(function (value, index, arr) {
+        return value !== 'Jg';
+      }));
+    } else {
+      setFilter([...filter, 'Jg'])
+    }
+  }
+  const handleMid = () => {
+    if (filter.includes('Mid')) {
+      setFilter(filter.filter(function (value, index, arr) {
+        return value !== 'Mid';
+      }));
+    } else {
+      setFilter([...filter, 'Mid'])
+    }
+  }
+  const handleSupp = () => {
+    if (filter.includes('Supp')) {
+      setFilter(filter.filter(function (value, index, arr) {
+        return value !== 'Supp';
+      }));
+    } else {
+      setFilter([...filter, 'Supp'])
+    }
+  }
+
+  useEffect(() => {
+    if (filter.length < 1)
+      fetchCharacters()
+    else
+      fetchCharactersF(filter)
+  }, [filter])
+
+  async function fetchCharactersF(filter) {
+    const apiData = await API.graphql({ query: listCharacters });
+    const charsFromAPI = apiData.data.listCharacters.items;
+    await Promise.all(
+      charsFromAPI.map(async (charac) => {
+        if (charac.image) {
+          const image = await Storage.get(charac.image);
+          charac.image = image;
+        }
+        return charac;
+      })
+    );
+    var filtered = []
+    charsFromAPI.forEach((ch) => {
+      if (
+        filter.some(v => ch.lanes.includes(v)))
+        filtered.push(ch)
+    })
+    setCharacters(
+      filtered.sort(function (a, b) {
+        if (a.name > b.name) {
+          return 1;
+        } else return -1;
+      })
+    );
+  }
 
   const adding = false;
   const enabledel = false;
@@ -272,6 +365,11 @@ function App() {
           </Button>
         </div>
       )}
+      <div><ButtonGroup><Button style={{ background: filter.includes('Top') ? "lightblue" : 'white' }} > <img src="top.png" alt='' width={40} onClick={handleTop} ></img></Button>
+        <Button style={{ background: filter.includes('Mid') ? "lightblue" : 'white' }} ><img src="mid.png" alt='' width={40} onClick={handleMid}></img></Button>
+        <Button style={{ background: filter.includes('Adc') ? "lightblue" : 'white' }} ><img src="dragon.png" alt='' width={40} onClick={handleAdc}></img></Button>
+        <Button style={{ background: filter.includes('Supp') ? "lightblue" : 'white' }} ><img src="support.png" alt='' width={40} onClick={handleSupp}></img></Button>
+        <Button style={{ background: filter.includes('Jg') ? "lightblue" : 'white' }} ><img src="jg.png" alt='' width={40} onClick={handleJg}></img></Button></ButtonGroup></div>
       <div
         style={{
           paddingLeft: "10px",
@@ -282,7 +380,7 @@ function App() {
       >
         <Grid container spacing={1}>
           {characters.map((character) => (
-            <Grid item xs={4} sm={3}>
+            <Grid item xs={4} sm={3} xl={2}>
               <Card style={{ background: getBackColor(character.winrate) }}>
                 <CardHeader
                   style={{ marginBottom: 0, paddingBottom: 0 }}
